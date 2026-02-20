@@ -1,6 +1,10 @@
-# yandex_client — библиотека для ботов Яндекс.Мессенджера
+# yandex-bot-client — библиотека для ботов Яндекс.Мессенджера
 
 Лёгкий aiogram-style клиент к Bot API Яндекс.Мессенджера: long polling, роутеры, фильтры, FSM и inline-кнопки без внешних SDK.
+
+Именование:
+- пакет в PyPI: `yandex-bot-client`
+- импорт в Python-коде: `yandex_bot_client`
 
 Что внутри:
 - `Bot` с `message_handler`, `button_handler`, `callback_handler`, `default_handler`
@@ -20,6 +24,9 @@
 pip install yandex-bot-client
 ```
 
+Важно: имя пакета в PyPI и имя модуля для импорта могут отличаться.
+Для этого проекта установка: `yandex-bot-client`, импорт: `yandex_bot_client`.
+
 2) Добавьте токен в `.env`:
 
 ```env
@@ -31,7 +38,7 @@ YANDEX_BOT_API_KEY=ваш_oauth_токен_бота
 ```python
 import os
 import asyncio
-from yandex_client import Bot, Message
+from yandex_bot_client import Bot, Message
 
 bot = Bot(os.getenv("YANDEX_BOT_API_KEY"))
 
@@ -45,7 +52,7 @@ if __name__ == "__main__":
 
 ---
 
-## Установка для локальной разработки
+## Установка из исходников (локальная разработка)
 
 ```bash
 pip install -r requirements.txt
@@ -78,7 +85,7 @@ python -m test.example
 ## Структура проекта
 
 ```
-yandex_client/     # библиотека
+yandex_bot_client/ # библиотека
   __init__.py      # экспорт Bot, Keyboard, Router, F, Filter, StateFilter, State, ...
   client.py        # класс Bot, long polling, middleware chain
   filters.py       # фильтры F, Filter, StateFilter, and_f, or_f
@@ -102,7 +109,7 @@ bot.py             # точка входа
 
 ```python
 import os
-from yandex_client import Bot, Keyboard
+from yandex_bot_client import Bot, Keyboard
 
 API_KEY = os.getenv("YANDEX_BOT_API_KEY")
 ```
@@ -246,7 +253,7 @@ async def my_mw(handler, event, data):
 - **CallbackQuery**: `from_user`, `payload`, `data` (alias), `message_id`, `update_id`, `raw_update`, `raw_payload`.
 - **User**: `id`, `login`, `display_name`, `robot`, `_raw`.
 
-Импорт: `from yandex_client import Bot, Message, CallbackQuery, User`.
+Импорт: `from yandex_bot_client import Bot, Message, CallbackQuery, User`.
 
 ---
 
@@ -255,7 +262,7 @@ async def my_mw(handler, event, data):
 Группа обработчиков с тем же API, что и у Bot. Удобно разбивать логику по модулям (меню, оплаты, обратная связь).
 
 ```python
-from yandex_client import Bot, Keyboard, Router
+from yandex_bot_client import Bot, Keyboard, Router
 
 router = Router()
 
@@ -287,7 +294,7 @@ bot.include_router(router)
 Пример:
 
 ```python
-from yandex_client import Bot, F
+from yandex_bot_client import Bot, F
 
 @bot.message_handler(filters=F.text == "/help")
 async def help_cmd(update):
@@ -305,7 +312,7 @@ async def help_cmd(update):
 **StateFilter(state_or_states)** — один state (строка) или список/кортеж допустимых. Использует `Bot.current()` и login из update.
 
 ```python
-from yandex_client import Bot, F, StateFilter, State
+from yandex_bot_client import Bot, F, StateFilter, State
 
 class MyState(State):
     menu = "menu"
@@ -331,7 +338,7 @@ async def menu_cmd(message):
 Хендлеры с параметром **state=** срабатывают только когда текущее состояние пользователя совпадает (или `state=None` — любое).
 
 ```python
-from yandex_client import Bot, State, set_state, get_state, FSMContext
+from yandex_bot_client import Bot, State, set_state, get_state, FSMContext
 
 class Auth(State):
     wait_email = "wait_email"
@@ -408,7 +415,7 @@ await bot.reply("Подтвердите?", keyboard)
 ```python
 import asyncio
 import os
-from yandex_client import Bot, Keyboard, Message, CallbackQuery
+from yandex_bot_client import Bot, Keyboard, Message, CallbackQuery
 
 API_KEY = os.getenv("YANDEX_BOT_API_KEY")
 bot = Bot(API_KEY)
