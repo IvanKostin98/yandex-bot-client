@@ -185,6 +185,9 @@ class Bot:
                     b["callback_data"] = (
                         cd if isinstance(cd, dict) else json.loads(cd) if isinstance(cd, str) else cd
                     )
+                url = btn.get("url")
+                if isinstance(url, str) and url.strip():
+                    b["url"] = url.strip()
                 flat.append(b)
         return flat
 
