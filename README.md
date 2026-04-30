@@ -13,6 +13,7 @@
 - `State`, `FSMContext`, `set_state/get_state`
 - `Message`, `CallbackQuery`, `User` типы
 - `Keyboard` builder для inline-кнопок
+- `MultiSelectKeyboard` helper для клавиатуры множественного выбора
 
 ---
 
@@ -24,6 +25,13 @@
 - `Feature(backend)`: добавлен метод `edit_message_text` для редактирования существующих сообщений.
 - `Chore(backend)`: улучшена обработка ответа API с проверкой статуса ответа и типа `message_id`.
 - `Chore(backend)`: добавлена нормализация inline-клавиатуры перед отправкой (в том числе корректная обработка `url` у кнопок).
+
+### Feature: MultiSelectKeyboard и low-code мультивыбор
+
+- Добавлен `MultiSelectKeyboard` для клавиатуры множественного выбора (`toggle/all/done/cancel`).
+- Добавлена возможность скрыть кнопку `Назад` через `cancel_text=None, cancel_cmd=None`.
+- В пример `test/example.py` добавлен сценарий мультивыбора клиентов.
+- В `get_clients()` добавлены шаблоны источников данных: API, БД и локальный список.
 
 ---
 
@@ -88,7 +96,13 @@ python bot.py
 или
 
 ```bash
-python -m test.example
+python -m test.example_base
+```
+
+или пример с мультивыбором:
+
+```bash
+python -m test.example_MultiSelectKeyboard
 ```
 
 ---
@@ -108,7 +122,8 @@ yandex_bot_client/ # библиотека
 config/            # конфиг из .env
   __init__.py      # API_KEY
 test/
-  example.py       # пример бота (роутеры + FSM)
+  example_base.py  # базовый пример бота (роутеры + FSM)
+  example_MultiSelectKeyboard.py  # пример с MultiSelectKeyboard
 bot.py             # точка входа
 ```
 
@@ -430,6 +445,56 @@ await bot.reply("Подтвердите?", keyboard)
 
 Собирает клавиатуру из готового списка рядов (каждый ряд — список кнопок).  
 **Возвращает:** значение в формате для `send_message`.
+
+---
+
+## MultiSelectKeyboard (множественный выбор)
+
+`MultiSelectKeyboard` помогает собрать клавиатуру с чекбоксами (`✅/◻️`) и служебными кнопками:
+`Выбрать всё/Снять всё`, `Продолжить`, `Назад` (опционально).
+
+Импорт:
+
+```python
+from yandex_bot_client import MultiSelectKeyboard
+```
+
+Базовое использование:
+
+```python
+items = [
+    {"id": "c1", "text": "Клиент 1"},
+    {"id": "c2", "text": "Клиент 2"},
+]
+selected = ["c1"]
+
+k = MultiSelectKeyboard(items, selected).build()
+await bot.reply("Выберите клиентов:", k)
+```
+
+По умолчанию команды в callback payload:
+
+- toggle: `{"cmd": "/ms_toggle", "id": "<item_id>"}`
+- all/clear: `{"cmd": "/ms_all"}`
+- done: `{"cmd": "/ms_done"}`
+- cancel: `{"cmd": "/ms_cancel"}`
+
+Как скрыть кнопку `Назад`:
+
+```python
+MultiSelectKeyboard(items, selected, cancel_text=None, cancel_cmd=None).build()
+```
+
+Или можно скрыть только текст (команда тоже не будет добавлена, если текста нет):
+
+```python
+MultiSelectKeyboard(items, selected, cancel_text=None).build()
+```
+
+Мини-FAQ:
+- Кнопка `Назад` не отображается, если `cancel_text` пустой/`None` или `cancel_cmd=None`.
+
+Поддерживаются методы для управления состоянием: `toggle(item_id)`, `select_all()`, `clear_all()`, `selected()`.
 
 ---
 

@@ -5,7 +5,7 @@ __version__ = "0.1.0"
 from .client import Bot
 from .filters import F, Filter, StateFilter, and_f, or_f
 from .fsm import FSMContext, State, clear_state, get_state, set_state
-from .keyboard import Keyboard
+from .keyboard import Keyboard, MultiSelectKeyboard
 from .router import Router
 from .types import CallbackQuery, Message, User
 
@@ -16,6 +16,7 @@ __all__ = [
     "FSMContext",
     "Filter",
     "Keyboard",
+    "MultiSelectKeyboard",
     "Message",
     "Router",
     "State",
